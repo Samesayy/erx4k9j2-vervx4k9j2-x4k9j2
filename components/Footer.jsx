@@ -21,9 +21,9 @@ export default function Footer() {
             className="h-10 mb-4"
           />
           <p className="text-gray-600 mb-4">
-            Verve99 is your strategic partner for tailored, elegant workspace
-            solutions. Discover minimalism, flexibility, and trust—united in one
-            platform.
+            Verve99 is your premier partner for refined workspace solutions.
+            Experience professionalism, flexibility, and reliability in one
+            seamless platform.
           </p>
           <div className="flex space-x-4">
             <a
@@ -199,11 +199,6 @@ export default function Footer() {
               <li>
                 <Link href="/search?category=warehouses" className="hover:text-brand-primary transition-colors">
                   Warehouses (Coming Soon)
-                </Link>
-              </li>
-              <li>
-                <Link href="/search?category=factory" className="hover:text-brand-primary transition-colors">
-                  Factory on Lease (Coming Soon)
                 </Link>
               </li>
               <li>
