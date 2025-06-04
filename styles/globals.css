@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar (WebKit) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar (Firefox) */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Global background and text color */
+body {
+  @apply bg-primary-light text-primary-dark;
+}
+
+/* Default link color */
+a {
+  @apply text-brand-primary hover:text-accent;
+}
+
+/* Disabled text style (if needed) */
+.disabled {
+  @apply text-medium-gray cursor-not-allowed;
+}
