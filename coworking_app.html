@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verve99 Coworking Marketplace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <div id="root"></div>
+  <script type="module">
+    import React, { useState } from 'https://cdn.skypack.dev/react';
+    import { createRoot } from 'https://cdn.skypack.dev/react-dom/client';
+    import {
+      Menu, X, ChevronDown, Building, Users, CalendarDays, BookOpen, Filter
+      Mail, Clock, Layout, MapPin, Star, BadgeCheck
+    } from 'https://cdn.skypack.dev/lucide-react';
+
+    // Cities and office types
+    const MOCK_CITIES = ['Delhi', 'Mumbai', 'Bangalore'];
+    const MOCK_SPACE_TYPES = [
+      { value: 'private-office', label: 'Private Office', icon: Building },
+      { value: 'coworking-space', label: 'Coworking Space', icon: Users },
+      { value: 'meeting-room', label: 'Meeting Room', icon: CalendarDays },
+      { value: 'training-room', label: 'Training Room', icon: BookOpen },
+      { value: 'virtual-office', label: 'Virtual Office', icon: Mail },
+      { value: 'day-pass', label: 'Day Pass', icon: Clock },
+      { value: 'shared-office', label: 'Shared Office', icon: Layout }
+    ];
+
+    // Popular places only for Delhi as example
+    const POPULAR_DELHI = [
+      'Aerocity','Connaught Place','South Delhi','Nehru Place','Saket',
+      'Okhla','Janakpuri','Jasola','Netaji Subash Place','Jhandewalan'
+    ];
+
+    // Generate some listings programmatically
+    function generateListings(city) {
+      const list = [];
+      for (let i = 1; i <= 20; i++) {
+        const type = MOCK_SPACE_TYPES[i % MOCK_SPACE_TYPES.length].value;
+        list.push({
+          id: `${city}-${i}`,
+          type,
+          city,
+          title: `${city} ${type.replace('-', ' ')} Center ${i}`,
+          address: `${city} District ${i}`,
+          images: [
+            `https://source.unsplash.com/random/800x600/?office,${city}&sig=${i}`,
+            `https://source.unsplash.com/random/800x600/?workspace,${city}&sig=${i+100}`
+          ],
+          rating: 3 + (i % 3) + 0.2,
+          reviews: 10 + i,
+          priceDay: 300 + i * 10,
+          priceMonth: 5000 + i * 100,
+          amenities: ['Wi-Fi','Coffee','AC','Printer','Parking','Cafeteria','Meeting Rooms','24/7 Access','Power Backup'],
+          description: `Spacious ${type} in ${city} with modern facilities and vibrant community.`,
+          available_from: '2023-01-01',
+          available_to: '2025-12-31',
+          is_verified: i % 2 === 0,
+          owner: i % 2 === 0 ? 'owner1' : 'owner2'
+        });
+      }
+      return list;
+    }
+
+    const MOCK_LISTINGS = [
+      ...generateListings('Delhi'),
+      ...generateListings('Mumbai')
+    ];
+
+    // Modal for callbacks
+    function ConnectModal({ open, onClose, listing }) {
+      const [name, setName] = useState('');
+      const [email, setEmail] = useState('');
+      const [phone, setPhone] = useState('');
+      const [location, setLocation] = useState('Delhi');
+      const [officeType, setOfficeType] = useState(MOCK_SPACE_TYPES[0].value);
+      const [seats, setSeats] = useState('1-3');
+
+      if (!open) return null;
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+            <button className="absolute top-2 right-2" onClick={onClose}><X /></button>
+            <h2 className="text-xl font-semibold mb-2">Want a Call Back?</h2>
+            {listing && <p className="text-sm mb-4">For: {listing.title}</p>}
+            <div className="space-y-3">
+              <input className="w-full border p-2 rounded" placeholder="Name" value={name} onChange={e => setName(e.target.value)} />
+              <input className="w-full border p-2 rounded" placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+              <input className="w-full border p-2 rounded" placeholder="Phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
+              <select className="w-full border p-2 rounded" value={location} onChange={e => setLocation(e.target.value)}>
+                {MOCK_CITIES.map(c => <option key={c}>{c}</option>)}
+                <option>Other</option>
+              </select>
+              <select className="w-full border p-2 rounded" value={officeType} onChange={e => setOfficeType(e.target.value)}>
+                {MOCK_SPACE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                <option>Other</option>
+              </select>
+              <select className="w-full border p-2 rounded" value={seats} onChange={e => setSeats(e.target.value)}>
+                <option>1-3</option><option>4-8</option><option>9-20</option><option>21-50</option><option>More</option>
+              </select>
+              <button className="w-full bg-blue-600 text-white py-2 rounded" onClick={() => { alert('Request sent!'); onClose(); }}>Submit</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Listing Card
+    function ListingCard({ listing, onDetails, onConnect }) {
+      const [imgIdx, setImgIdx] = useState(0);
+      const img = listing.images[imgIdx];
+      return (
+        <div className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 flex flex-col">
+          <div className="relative">
+            <img src={img} alt={listing.title} className="w-full h-40 object-cover rounded" />
+            {listing.images.length > 1 && (
+              <div className="absolute inset-0 flex items-center justify-between px-2 text-white">
+                <button onClick={() => setImgIdx((imgIdx - 1 + listing.images.length) % listing.images.length)}>&lt;</button>
+                <button onClick={() => setImgIdx((imgIdx + 1) % listing.images.length)}>&gt;</button>
+              </div>
+            )}
+            {listing.is_verified && <BadgeCheck className="absolute top-2 left-2 text-green-600" />}
+          </div>
+          <h3 className="font-semibold mt-2">{listing.title}</h3>
+          <p className="text-sm text-gray-600 flex items-center"><MapPin className="w-4 h-4 mr-1" />{listing.address}</p>
+          <div className="flex items-center text-yellow-500 mt-1"><Star className="w-4 h-4" /> <span className="ml-1 text-sm">{listing.rating} ({listing.reviews})</span></div>
+          <div className="mt-1 font-medium">₹{listing.priceDay}/day</div>
+          <div className="mt-2 flex-1 text-sm">
+            {listing.amenities.slice(0,3).map(a => <span key={a} className="mr-2">{a}</span>)}
+            {listing.amenities.length > 3 && <span>+{listing.amenities.length-3} more</span>}
+          </div>
+          <div className="mt-3 space-x-2">
+            <button className="px-3 py-1 border rounded" onClick={() => onDetails(listing)}>Expand Details</button>
+            <button className="px-3 py-1 bg-blue-600 text-white rounded" onClick={() => onConnect(listing)}>Connect Now</button>
+          </div>
+        </div>
+      );
+    }
+
+    // Filter Sidebar component
+    function FilterSidebar({ type, city, filters, setFilters, onClear }) {
+      return (
+        <div className="p-4 bg-white rounded shadow mb-4">
+          <h3 className="font-semibold mb-2 flex items-center">Filters <Filter className="w-4 h-4 ml-1" /></h3>
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm">Office Type</label>
+              <select className="w-full border p-2 rounded" value={filters.type} onChange={e => setFilters({...filters, type: e.target.value})}>
+                <option value="">All Types</option>
+                {MOCK_SPACE_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+              </select>
+            </div>
+            {city === 'Delhi' && (
+              <div>
+                <label className="text-sm">Popular Places</label>
+                <select className="w-full border p-2 rounded" value={filters.place} onChange={e => setFilters({...filters, place: e.target.value})}>
+                  <option value="">All</option>
+                  {POPULAR_DELHI.map(p => <option key={p}>{p}</option>)}
+                </select>
+              </div>
+            )}
+            <div className="flex space-x-2">
+              <input type="number" className="w-1/2 border p-2 rounded" placeholder="Min Price" value={filters.minPrice} onChange={e => setFilters({...filters, minPrice: e.target.value})} />
+              <input type="number" className="w-1/2 border p-2 rounded" placeholder="Max Price" value={filters.maxPrice} onChange={e => setFilters({...filters, maxPrice: e.target.value})} />
+            </div>
+            <div>
+              <label className="text-sm">Rating</label>
+              <select className="w-full border p-2 rounded" value={filters.rating} onChange={e => setFilters({...filters, rating: e.target.value})}>
+                <option value="">Any Rating</option>
+                <option>4.5 & Up</option>
+                <option>4 & Up</option>
+                <option>3 & Up</option>
+              </select>
+            </div>
+            <button className="px-3 py-1 bg-gray-200 rounded" onClick={onClear}>Clear Filters</button>
+          </div>
+        </div>
+      );
+    }
+
+    // Listing page with sidebar + cards
+    function ListingPage({ type, city, onDetails, onConnect }) {
+      const [filters, setFilters] = useState({ type: '', place: '', minPrice: '', maxPrice: '', rating: '' });
+      const listings = MOCK_LISTINGS.filter(l => {
+        if (type && l.type !== type) return false;
+        if (city && l.city !== city) return false;
+        if (filters.type && l.type !== filters.type) return false;
+        if (filters.minPrice && l.priceDay < Number(filters.minPrice)) return false;
+        if (filters.maxPrice && l.priceDay > Number(filters.maxPrice)) return false;
+        if (filters.rating) {
+          const min = parseFloat(filters.rating);
+          if (l.rating < min) return false;
+        }
+        return true;
+      });
+
+      const titleType = type ? MOCK_SPACE_TYPES.find(t => t.value === type)?.label + 's' : 'Spaces';
+      const heading = `${titleType} in ${city || 'All Cities'}`;
+
+      return (
+        <div className="flex flex-col md:flex-row mt-4">
+          <aside className="md:w-64 md:mr-4">
+            <FilterSidebar type={type} city={city} filters={filters} setFilters={setFilters} onClear={() => setFilters({ type: '', place: '', minPrice: '', maxPrice: '', rating: '' })} />
+          </aside>
+          <main className="flex-1">
+            <h2 className="text-2xl font-semibold mb-4">{heading}</h2>
+            {listings.length === 0 && <p>No listings found.</p>}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {listings.map(list => <ListingCard key={list.id} listing={list} onDetails={onDetails} onConnect={onConnect} />)}
+            </div>
+          </main>
+        </div>
+      );
+    }
+
+    // Listing details page
+    function ListingDetails({ listing, onBack, onConnect }) {
+      const [imgIdx, setImgIdx] = useState(0);
+      if (!listing) return null;
+      return (
+        <div className="mt-4">
+          <button className="mb-4 text-blue-600" onClick={onBack}>← Back</button>
+          <h2 className="text-2xl font-semibold mb-2">{listing.title}</h2>
+          <p className="flex items-center text-gray-600"><MapPin className="w-4 h-4 mr-1" />{listing.address} {listing.is_verified && <BadgeCheck className="text-green-600 ml-2" />}</p>
+          <div className="relative my-4">
+            <img src={listing.images[imgIdx]} className="w-full h-64 object-cover rounded" />
+            {listing.images.length > 1 && (
+              <div className="absolute inset-0 flex items-center justify-between px-2 text-white">
+                <button onClick={() => setImgIdx((imgIdx - 1 + listing.images.length) % listing.images.length)}>&lt;</button>
+                <button onClick={() => setImgIdx((imgIdx + 1) % listing.images.length)}>&gt;</button>
+              </div>
+            )}
+          </div>
+          <h3 className="font-semibold">About This Space</h3>
+          <p className="mb-2">{listing.description}</p>
+          <h3 className="font-semibold">Amenities</h3>
+          <ul className="list-disc pl-5 mb-2">
+            {listing.amenities.map(a => <li key={a}>{a}</li>)}
+          </ul>
+          <h3 className="font-semibold">Pricing & Availability</h3>
+          <p>₹{listing.priceDay}/day &nbsp; ₹{listing.priceMonth}/month</p>
+          <p>Available: {listing.available_from} - {listing.available_to}</p>
+          <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded" onClick={() => onConnect(listing)}>Connect Now</button>
+          <div className="mt-6 h-40 bg-gray-200 flex items-center justify-center">Map Placeholder</div>
+          <div className="mt-4">Rating: {listing.rating} ({listing.reviews} reviews)</div>
+        </div>
+      );
+    }
+
+    // Simple Auth page
+    function AuthPage({ mode, onToggleMode, onSubmit, role, setRole }) {
+      const [email, setEmail] = useState('');
+      const [password, setPassword] = useState('');
+      return (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="bg-white p-6 rounded shadow w-full max-w-sm">
+            <h2 className="text-xl font-semibold text-center mb-4">{mode === 'login' ? 'Login' : 'Sign Up'}</h2>
+            <div className="flex justify-center mb-4 space-x-2">
+              <button className={`px-3 py-1 border rounded ${role==='user' ? 'bg-blue-600 text-white' : ''}`} onClick={() => setRole('user')}>User</button>
+              <button className={`px-3 py-1 border rounded ${role==='owner' ? 'bg-blue-600 text-white' : ''}`} onClick={() => setRole('owner')}>Property Owner</button>
+            </div>
+            <input className="w-full border p-2 rounded mb-2" placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+            <input className="w-full border p-2 rounded mb-4" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+            <button className="w-full bg-blue-600 text-white py-2 rounded mb-2" onClick={() => onSubmit({ email, role })}>{mode==='login' ? 'Login' : 'Sign Up'}</button>
+            <div className="text-sm text-center">
+              {mode==='login' ? (<>
+                <a href="#" className="text-blue-600" onClick={onToggleMode}>Create account</a>
+                <div className="mt-1"><a href="#" className="text-blue-600">Forgot Password?</a></div>
+              </>) : (<a href="#" className="text-blue-600" onClick={onToggleMode}>Have an account? Login</a>)}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Dashboard components
+    function UserDashboard({ user, onSignOut, onBrowse }) {
+      return (
+        <div className="p-4">
+          <h2 className="text-xl font-semibold mb-2">Welcome, {user.email}</h2>
+          <ul className="space-y-1 mb-4">
+            <li>Profile Settings</li>
+            <li>Payment Methods</li>
+            <li>Change Password</li>
+            <li>My Inquiries</li>
+          </ul>
+          <button className="px-3 py-1 bg-blue-600 text-white rounded mr-2" onClick={onBrowse}>Browse Listings</button>
+          <button className="px-3 py-1 border rounded" onClick={onSignOut}>Sign Out</button>
+        </div>
+      );
+    }
+
+    function OwnerDashboard({ user, onSignOut }) {
+      const myListings = MOCK_LISTINGS.filter(l => l.owner === 'owner1');
+      return (
+        <div className="p-4">
+          <h2 className="text-xl font-semibold mb-2">Welcome, {user.email}</h2>
+          <button className="px-3 py-1 bg-green-600 text-white rounded mb-3">Add New Listing</button>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {myListings.map(list => (
+              <div key={list.id} className="border p-3 rounded">
+                <h3 className="font-semibold">{list.title}</h3>
+                <div className="space-x-2 mt-2">
+                  <button className="px-2 py-1 border rounded">Edit</button>
+                  <button className="px-2 py-1 border rounded">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button className="mt-4 px-3 py-1 border rounded" onClick={onSignOut}>Sign Out</button>
+        </div>
+      );
+    }
+
+    // NavBar
+    function NavBar({ user, onNavigate, onAuth, onDashboard, onSignOut }) {
+      const [open, setOpen] = useState(false);
+      return (
+        <nav className="bg-white shadow">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex justify-between h-16 items-center">
+              <div className="flex items-center">
+                <a href="#" className="text-xl font-bold" onClick={() => onNavigate('home')}>Verve99</a>
+                <div className="hidden md:flex ml-10 space-x-4">
+                  <a href="#" onClick={() => onNavigate('listings')} className="hover:text-blue-600">All Spaces</a>
+                  <div className="relative group">
+                    <button className="flex items-center hover:text-blue-600">Service Space <ChevronDown className="w-4 h-4 ml-1" /></button>
+                    <div className="absolute hidden group-hover:block bg-white shadow rounded mt-1 z-10">
+                      {MOCK_SPACE_TYPES.map(t => (
+                        <a key={t.value} href="#" className="block px-4 py-2 hover:bg-gray-100 flex items-center" onClick={() => onNavigate('listings', { type: t.value })}>
+                          <t.icon className="w-4 h-4 mr-2" />{t.label}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="hidden md:flex items-center space-x-2">
+                {user ? (
+                  <div className="relative group">
+                    <button className="flex items-center">{user.email} <ChevronDown className="w-4 h-4 ml-1" /></button>
+                    <div className="absolute hidden group-hover:block bg-white shadow rounded mt-1 z-10">
+                      <a href="#" className="block px-4 py-2 hover:bg-gray-100" onClick={onDashboard}>My Dashboard</a>
+                      <a href="#" className="block px-4 py-2 hover:bg-gray-100" onClick={onSignOut}>Sign Out</a>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <button className="px-3 py-1 border rounded" onClick={() => onAuth('login')}>Login</button>
+                    <button className="px-3 py-1 bg-blue-600 text-white rounded" onClick={() => onAuth('signup')}>Sign Up</button>
+                  </>
+                )}
+              </div>
+              <button className="md:hidden" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
+            </div>
+            {open && (
+              <div className="md:hidden py-2 space-y-1">
+                <a href="#" onClick={() => { setOpen(false); onNavigate('listings'); }} className="block">All Spaces</a>
+                {MOCK_SPACE_TYPES.map(t => (
+                  <a key={t.value} href="#" className="block" onClick={() => { setOpen(false); onNavigate('listings', { type: t.value }); }}>{t.label}</a>
+                ))}
+                {user ? (
+                  <>
+                    <a href="#" className="block" onClick={() => { setOpen(false); onDashboard(); }}>My Dashboard</a>
+                    <a href="#" className="block" onClick={() => { setOpen(false); onSignOut(); }}>Sign Out</a>
+                  </>
+                ) : (
+                  <>
+                    <a href="#" className="block" onClick={() => { setOpen(false); onAuth('login'); }}>Login</a>
+                    <a href="#" className="block" onClick={() => { setOpen(false); onAuth('signup'); }}>Sign Up</a>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </nav>
+      );
+    }
+
+    // Root App component managing pages
+    function App() {
+      const [user, setUser] = useState(null);
+      const [page, setPage] = useState({ name: 'home' });
+      const [modal, setModal] = useState({ open: false, listing: null });
+      const [authMode, setAuthMode] = useState('login');
+      const [role, setRole] = useState('user');
+
+      function navigate(name, params = {}) { setPage({ name, params }); }
+      function handleAuthSubmit({ email, role }) {
+        setUser({ email, role });
+        if (role === 'owner') navigate('ownerDashboard');
+        else navigate('userDashboard');
+      }
+
+      let content;
+      if (page.name === 'login' || page.name === 'signup') {
+        content = <AuthPage mode={page.name} onToggleMode={() => navigate(page.name === 'login' ? 'signup' : 'login')} onSubmit={handleAuthSubmit} role={role} setRole={setRole} />;
+      } else if (page.name === 'userDashboard') {
+        content = <UserDashboard user={user} onSignOut={() => { setUser(null); navigate('home'); }} onBrowse={() => navigate('listings')} />;
+      } else if (page.name === 'ownerDashboard') {
+        content = <OwnerDashboard user={user} onSignOut={() => { setUser(null); navigate('home'); }} />;
+      } else if (page.name === 'listings') {
+        const { type = '', city = '' } = page.params;
+        content = <ListingPage type={type} city={city} onDetails={list => navigate('details', { id: list.id })} onConnect={listing => setModal({ open: true, listing })} />;
+      } else if (page.name === 'details') {
+        const listing = MOCK_LISTINGS.find(l => l.id === page.params.id);
+        content = <ListingDetails listing={listing} onBack={() => navigate('listings', { type: listing.type, city: listing.city })} onConnect={listing => setModal({ open: true, listing })} />;
+      } else {
+        // simple home page
+        content = (
+          <div className="p-6 text-center">
+            <h1 className="text-3xl font-bold mb-4">Find Your Perfect Workspace</h1>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded" onClick={() => navigate('listings')}>Browse Spaces</button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex flex-col min-h-screen">
+          <NavBar
+            user={user}
+            onNavigate={(name, params) => navigate(name, params)}
+            onAuth={mode => { setAuthMode(mode); navigate(mode); }}
+            onDashboard={() => navigate(user.role === 'owner' ? 'ownerDashboard' : 'userDashboard')}
+            onSignOut={() => { setUser(null); navigate('home'); }}
+          />
+          <div className="flex-1 max-w-7xl mx-auto w-full px-4">
+            {content}
+          </div>
+          <ConnectModal open={modal.open} listing={modal.listing} onClose={() => setModal({ open: false, listing: null })} />
+        </div>
+      );
+    }
+
+    createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
