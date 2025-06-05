@@ -9,94 +9,75 @@ import {
 } from 'react-icons/fi';
 
 export default function Verve99() {
-  // Left‐column statistics
   const stats = [
     { number: '120+', label: 'Active Cities' },
     { number: '5,200+', label: 'Partner Hubs' },
     { number: '35,000+', label: 'Businesses Served' },
   ];
 
-  // Right‐column features
   const features = [
     {
-      icon: <FiGlobe className="text-3xl text-brand-primary" />,
+      icon: <FiGlobe className="text-2xl" />,
       title: 'Nationwide Reach',
-      desc: 'From major metros to emerging markets, explore over 120 cities with a single click.',
+      desc: 'From major metros to emerging markets, explore workspaces in 120+ cities.',
     },
     {
-      icon: <FiLayers className="text-3xl text-brand-primary" />,
+      icon: <FiLayers className="text-2xl" />,
       title: 'Layered Solutions',
-      desc: 'Choose everything from a plug-and-play desk to a fully branded enterprise hub—scalable as you grow.',
+      desc: 'Choose plug‑and‑play desks or fully branded hubs—scale as you grow.',
     },
     {
-      icon: <FiTrendingUp className="text-3xl text-brand-primary" />,
-      title: 'Data-Driven Insights',
-      desc: 'Our analytics engine surfaces market trends and pricing intelligence, so you always negotiate from strength.',
+      icon: <FiTrendingUp className="text-2xl" />,
+      title: 'Data‑Driven Insights',
+      desc: 'Market intelligence helps you negotiate the best rates every time.',
     },
     {
-      icon: <FiShield className="text-3xl text-brand-primary" />,
+      icon: <FiShield className="text-2xl" />,
       title: 'Vetted & Secure',
-      desc: 'Every workspace passes a rigorous 20-point safety and quality check. Peace of mind is built‐in.',
+      desc: 'Every location passes a 20‑point safety and quality check.',
     },
     {
-      icon: <FiThumbsUp className="text-3xl text-brand-primary" />,
+      icon: <FiThumbsUp className="text-2xl" />,
       title: 'Zero Brokerage',
-      desc: 'Premium listings with no hidden fees. We earn only from providers, never from you.',
+      desc: 'Premium listings with no hidden fees—our earnings come from providers.',
     },
   ];
 
   return (
-    <section className="relative py-20 bg-primary-light overflow-hidden">
-      {/* Optional soft background pattern (Very subtle) */}
-      <div
-        className="absolute inset-0 bg-[url('/pattern-diagonal.svg')] opacity-5 pointer-events-none"
-        aria-hidden="true"
-      />
+    <section className="relative py-20 bg-gradient-to-br from-primary-light via-white to-primary-light overflow-hidden">
+      {/* Decorative blurred shapes */}
+      <div className="absolute -top-16 -left-16 w-72 h-72 bg-brand-primary opacity-20 rounded-full blur-3xl" />
+      <div className="absolute -bottom-16 -right-16 w-72 h-72 bg-accent opacity-20 rounded-full blur-3xl" />
 
-      <div className="relative max-w-7xl mx-auto px-4 lg:grid lg:grid-cols-2 lg:gap-12">
-        {/* ========== LEFT COLUMN: Statistics Cards ========== */}
-        <div className="space-y-8">
-          <h2 className="text-4xl font-bold text-primary-dark">
-            Why <span className="text-accent">Verve99</span>?
+      <div className="relative max-w-7xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-extrabold text-primary-dark">
+            Why <span className="text-brand-primary">Verve99</span>?
           </h2>
-          <p className="text-medium-gray text-lg max-w-md">
-            Your strategic partner for finding, comparing, and securing the perfect workspace—powered by data, backed by trust.
+          <p className="mt-4 text-lg text-medium-gray max-w-2xl mx-auto">
+            Your premier partner for refined workspace solutions—powered by data and backed by trust.
           </p>
-          <div className="space-y-6">
-            {stats.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-center space-x-4 bg-white border border-medium-gray rounded-lg p-6 shadow-sm"
-              >
-                <div className="flex-shrink-0">
-                  <span className="text-4xl font-extrabold text-accent">
-                    {item.number}
-                  </span>
-                </div>
-                <p className="text-lg font-medium text-primary-dark">{item.label}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* ========== RIGHT COLUMN: Feature Cards ========== */}
-        <div className="mt-16 lg:mt-0 space-y-6">
-          {features.map((feat, idx) => (
-            <div
-              key={idx}
-              className="flex items-start space-x-5 bg-white border border-medium-gray rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
-            >
-              <div className="flex-shrink-0">
-                <div className="w-14 h-14 rounded-full bg-primary-light border-2 border-brand-primary flex items-center justify-center">
-                  {feat.icon}
-                </div>
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
+          {stats.map((stat) => (
+            <div key={stat.label} className="bg-white rounded-xl shadow-md p-6 text-center">
+              <p className="text-4xl font-extrabold text-brand-primary">{stat.number}</p>
+              <p className="mt-2 text-medium-gray font-medium">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Feature cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feat) => (
+            <div key={feat.title} className="bg-white border border-medium-gray rounded-xl p-6 text-center hover:shadow-xl transition-shadow">
+              <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-brand-primary/10 text-brand-primary">
+                {feat.icon}
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-primary-dark">
-                  {feat.title}
-                </h3>
-                <p className="mt-1 text-medium-gray">{feat.desc}</p>
-              </div>
+              <h3 className="text-xl font-semibold text-primary-dark">{feat.title}</h3>
+              <p className="mt-2 text-medium-gray text-sm">{feat.desc}</p>
             </div>
           ))}
         </div>
