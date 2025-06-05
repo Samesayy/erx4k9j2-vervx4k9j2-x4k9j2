@@ -254,21 +254,21 @@
       const [email, setEmail] = useState('');
       const [password, setPassword] = useState('');
       return (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="bg-white p-6 rounded shadow w-full max-w-sm">
-            <h2 className="text-xl font-semibold text-center mb-4">{mode === 'login' ? 'Login' : 'Sign Up'}</h2>
-            <div className="flex justify-center mb-4 space-x-2">
-              <button className={`px-3 py-1 border rounded ${role==='user' ? 'bg-blue-600 text-white' : ''}`} onClick={() => setRole('user')}>User</button>
-              <button className={`px-3 py-1 border rounded ${role==='owner' ? 'bg-blue-600 text-white' : ''}`} onClick={() => setRole('owner')}>Property Owner</button>
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 p-4">
+          <div className="bg-white/80 backdrop-blur-lg p-8 rounded-xl shadow-lg w-full max-w-md">
+            <h2 className="text-2xl font-bold text-center mb-6 tracking-wide">{mode === 'login' ? 'Login' : 'Register'}</h2>
+            <div className="flex justify-center mb-6 space-x-2">
+              <button className={`px-4 py-2 border rounded-full transition ${role==='user' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`} onClick={() => setRole('user')}>User</button>
+              <button className={`px-4 py-2 border rounded-full transition ${role==='owner' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`} onClick={() => setRole('owner')}>Property Owner</button>
             </div>
-            <input className="w-full border p-2 rounded mb-2" placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
-            <input className="w-full border p-2 rounded mb-4" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-            <button className="w-full bg-blue-600 text-white py-2 rounded mb-2" onClick={() => onSubmit({ email, role })}>{mode==='login' ? 'Login' : 'Sign Up'}</button>
-            <div className="text-sm text-center">
+            <input className="w-full border border-gray-300 p-3 rounded mb-3 focus:ring-2 focus:ring-blue-500" placeholder="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+            <input className="w-full border border-gray-300 p-3 rounded mb-5 focus:ring-2 focus:ring-blue-500" placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
+            <button className="w-full bg-blue-600 text-white py-2 rounded-lg mb-4 hover:bg-blue-700" onClick={() => onSubmit({ email, role })}>{mode==='login' ? 'Login' : 'Register'}</button>
+            <div className="text-sm text-center space-y-1">
               {mode==='login' ? (<>
-                <a href="#" className="text-blue-600" onClick={onToggleMode}>Create account</a>
-                <div className="mt-1"><a href="#" className="text-blue-600">Forgot Password?</a></div>
-              </>) : (<a href="#" className="text-blue-600" onClick={onToggleMode}>Have an account? Login</a>)}
+                <a href="#" className="text-blue-600 hover:underline" onClick={onToggleMode}>No account? Register</a>
+                <div><a href="#" className="text-blue-600 hover:underline">Forgot Password?</a></div>
+              </>) : (<a href="#" className="text-blue-600 hover:underline" onClick={onToggleMode}>Have an account? Login</a>)}
             </div>
           </div>
         </div>
@@ -287,7 +287,7 @@
             <li>My Inquiries</li>
           </ul>
           <button className="px-3 py-1 bg-blue-600 text-white rounded mr-2" onClick={onBrowse}>Browse Listings</button>
-          <button className="px-3 py-1 border rounded" onClick={onSignOut}>Sign Out</button>
+          <button className="px-3 py-1 border rounded" onClick={onSignOut}>Logout</button>
         </div>
       );
     }
@@ -309,7 +309,7 @@
               </div>
             ))}
           </div>
-          <button className="mt-4 px-3 py-1 border rounded" onClick={onSignOut}>Sign Out</button>
+          <button className="mt-4 px-3 py-1 border rounded" onClick={onSignOut}>Logout</button>
         </div>
       );
     }
@@ -343,13 +343,13 @@
                     <button className="flex items-center">{user.email} <ChevronDown className="w-4 h-4 ml-1" /></button>
                     <div className="absolute hidden group-hover:block bg-white shadow rounded mt-1 z-10">
                       <a href="#" className="block px-4 py-2 hover:bg-gray-100" onClick={onDashboard}>My Dashboard</a>
-                      <a href="#" className="block px-4 py-2 hover:bg-gray-100" onClick={onSignOut}>Sign Out</a>
+                      <a href="#" className="block px-4 py-2 hover:bg-gray-100" onClick={onSignOut}>Logout</a>
                     </div>
                   </div>
                 ) : (
                   <>
                     <button className="px-3 py-1 border rounded" onClick={() => onAuth('login')}>Login</button>
-                    <button className="px-3 py-1 bg-blue-600 text-white rounded" onClick={() => onAuth('signup')}>Sign Up</button>
+                    <button className="px-3 py-1 bg-blue-600 text-white rounded" onClick={() => onAuth('register')}>Register</button>
                   </>
                 )}
               </div>
@@ -364,12 +364,12 @@
                 {user ? (
                   <>
                     <a href="#" className="block" onClick={() => { setOpen(false); onDashboard(); }}>My Dashboard</a>
-                    <a href="#" className="block" onClick={() => { setOpen(false); onSignOut(); }}>Sign Out</a>
+                    <a href="#" className="block" onClick={() => { setOpen(false); onSignOut(); }}>Logout</a>
                   </>
                 ) : (
                   <>
                     <a href="#" className="block" onClick={() => { setOpen(false); onAuth('login'); }}>Login</a>
-                    <a href="#" className="block" onClick={() => { setOpen(false); onAuth('signup'); }}>Sign Up</a>
+                    <a href="#" className="block" onClick={() => { setOpen(false); onAuth('register'); }}>Register</a>
                   </>
                 )}
               </div>
@@ -395,8 +395,8 @@
       }
 
       let content;
-      if (page.name === 'login' || page.name === 'signup') {
-        content = <AuthPage mode={page.name} onToggleMode={() => navigate(page.name === 'login' ? 'signup' : 'login')} onSubmit={handleAuthSubmit} role={role} setRole={setRole} />;
+      if (page.name === 'login' || page.name === 'register') {
+        content = <AuthPage mode={page.name} onToggleMode={() => navigate(page.name === 'login' ? 'register' : 'login')} onSubmit={handleAuthSubmit} role={role} setRole={setRole} />;
       } else if (page.name === 'userDashboard') {
         content = <UserDashboard user={user} onSignOut={() => { setUser(null); navigate('home'); }} onBrowse={() => navigate('listings')} />;
       } else if (page.name === 'ownerDashboard') {
