@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { FiMenu, FiX, FiChevronDown } from 'react-icons/fi';
+import { FiMenu, FiX, FiChevronDown, FiHeart } from 'react-icons/fi';
 
 export default function Navbar() {
   const [servicesOpen, setServicesOpen] = useState(false);
@@ -124,14 +124,17 @@ export default function Navbar() {
 
           {/* Desktop auth links */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/login" className="text-primary-light hover:text-brand-primary">
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-brand-primary text-primary-light px-3 py-1 rounded hover:bg-accent transition-colors"
-            >
-              Sign Up
+          <Link href="/login" className="text-primary-light hover:text-brand-primary">
+            Login
+          </Link>
+          <Link href="/favorites" className="text-primary-light hover:text-brand-primary flex items-center">
+            <FiHeart className="mr-1" /> Favorites
+          </Link>
+          <Link
+            href="/signup"
+            className="bg-brand-primary text-primary-light px-3 py-1 rounded hover:bg-accent transition-colors"
+          >
+            Sign Up
             </Link>
           </div>
         </div>
@@ -193,14 +196,17 @@ export default function Navbar() {
             )}
           </div>
           <div className="pt-4 border-t border-medium-gray flex flex-col space-y-2">
-            <Link href="/login" className="text-primary-light hover:text-brand-primary">
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="bg-brand-primary text-primary-light px-3 py-1 rounded w-max hover:bg-accent transition-colors"
-            >
-              Sign Up
+          <Link href="/login" className="text-primary-light hover:text-brand-primary">
+            Login
+          </Link>
+          <Link href="/favorites" className="text-primary-light hover:text-brand-primary flex items-center">
+            <FiHeart className="mr-1" /> Favorites
+          </Link>
+          <Link
+            href="/signup"
+            className="bg-brand-primary text-primary-light px-3 py-1 rounded w-max hover:bg-accent transition-colors"
+          >
+            Sign Up
             </Link>
           </div>
         </div>
