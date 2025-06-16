@@ -2,34 +2,36 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 
-export default function SearchModule({ initialType }) {
+export default function SearchModule({ officeType }) {
   const router = useRouter();
-  const [city, setCity] = useState('');
-  const [query, setQuery] = useState('');
-  const [officeType, setOfficeType] = useState(initialType || '');
+  // Set a default city so the field isn't empty
+  const [city, setCity] = useState('Gurgaon'); 
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Navigate to /search with query params: city, q, type
+    if (!city) {
+        alert('Please select a city.');
+        return;
+    }
+    // The 'officeType' is the clean, singular value from the tabs.
+    // We navigate to the /listing page with the correct parameters.
     router.push(
-      `/search?city=${encodeURIComponent(city)}&q=${encodeURIComponent(
-        query
-      )}&type=${encodeURIComponent(officeType)}`
+      `/listing?service=${encodeURIComponent(officeType)}&city=${encodeURIComponent(city)}`
     );
   };
 
   return (
     <form
       onSubmit={handleSearch}
-      className="flex flex-col sm:flex-row items-center gap-2"
+      className="flex flex-col sm:flex-row items-center gap-2 bg-white p-2 rounded-lg border border-medium-gray"
     >
       {/* City Dropdown */}
       <select
         value={city}
         onChange={(e) => setCity(e.target.value)}
-        className="w-full sm:w-1/4 px-3 py-2 border border-medium-gray bg-primary-light text-primary-dark rounded-l focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        className="w-full sm:w-1/3 px-3 py-3 border-none bg-transparent focus:outline-none focus:ring-0"
       >
-        <option value="">Select City</option>
+        <option value="" disabled>Select City</option>
         <option value="Gurgaon">Gurgaon</option>
         <option value="Delhi">Delhi</option>
         <option value="Noida">Noida</option>
@@ -38,29 +40,14 @@ export default function SearchModule({ initialType }) {
         <option value="Bangalore">Bangalore</option>
         <option value="Chennai">Chennai</option>
         <option value="Hyderabad">Hyderabad</option>
-        <option value="Ahmedabad">Ahmedabad</option>
-        <option value="Kolkata">Kolkata</option>
-        <option value="Indore">Indore</option>
       </select>
 
-      {/* Search Input */}
-      <input
-        type="text"
-        placeholder="Search location or coworking space"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="flex-grow px-3 py-2 border-t border-b border-medium-gray bg-primary-light text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-primary"
-      />
-
-      {/* Hidden: keep track of selected office type */}
-      <input type="hidden" value={officeType} />
-
-      {/* Show Workspaces Button */}
+      {/* Search Button */}
       <button
         type="submit"
-        className="w-full sm:w-auto bg-brand-primary text-primary-light px-4 py-2 rounded-r hover:bg-accent transition-colors"
+        className="w-full sm:w-auto flex-grow bg-brand-primary text-white px-6 py-3 rounded-md font-semibold hover:bg-accent transition-colors"
       >
-        Show Workspaces
+        Search
       </button>
     </form>
   );

@@ -1,267 +1,148 @@
 // components/WorkspacesForEveryone.jsx
-
 import { useState } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
+import {
+  BsBuilding,
+  BsBarChartLine,
+  BsRocketTakeoff,
+  BsPersonWorkspace,
+  BsGlobe,
+  BsMap,
+  BsEasel2,
+  BsDoorOpen,
+  BsHouseDoor,
+  BsPersonBadge,
+  BsPersonVideo,
+  BsWallet2,
+} from 'react-icons/bs';
 
-/**
- * WorkspacesForEveryone
- *
- * A responsive tabbed section with six category buttons.
- * When you click a category, three relevant cards appear below.
- * 
- * Color palette (Strategic Horizon):
- * - Primary Dark (#2C3E50)
- * - Primary Light (#ECF0F1)
- * - Medium Gray (#95A5A6)
- * - Brand Primary (#3498DB)
- * - Accent (#E6B980)
- */
+// 1. THE NEW, NESTED DATA STRUCTURE
+// Each persona has an array of recommended 'solutions'.
+// Each solution maps to a real page on your site.
+const personas = [
+  {
+    id: 'enterprise',
+    title: 'For Enterprise',
+    icon: <BsBuilding size={28} />,
+    solutions: [
+      { icon: <BsHouseDoor />, title: 'Managed Office', desc: 'A private, custom-built HQ.', href: '/enterprise-solutions' },
+      { icon: <BsDoorOpen />, title: 'Serviced Office', desc: 'For large, flexible teams.', href: '/listing?service=Serviced Office' },
+      { icon: <BsPersonWorkspace />, title: 'Coworking Space', desc: 'Hubs for distributed teams.', href: '/listing?service=Coworking Space' },
+      { icon: <BsBuilding />, title: 'Commercial Space', desc: 'Conventional leases, managed.', href: '/enterprise-solutions' },
+    ],
+  },
+  {
+    id: 'small-teams',
+    title: 'For Small Teams',
+    icon: <BsBarChartLine size={28} />,
+    solutions: [
+      { icon: <BsPersonWorkspace />, title: 'Coworking Space', desc: 'Vibrant, collaborative desks.', href: '/listing?service=Coworking Space' },
+      { icon: <BsPersonVideo />, title: 'Meeting Rooms', desc: 'For client and team meetings.', href: '/listing?service=Meeting Room' },
+      { icon: <BsPersonBadge />, title: 'Virtual Office', desc: 'A premium business address.', href: '/listing?service=Virtual Office' },
+      { icon: <BsEasel2 />, title: 'Training Rooms', desc: 'For workshops and upskilling.', href: '/listing?service=Training Room' },
+    ],
+  },
+  {
+    id: 'startups',
+    title: 'For Startups',
+    icon: <BsRocketTakeoff size={28} />,
+    solutions: [
+      { icon: <BsPersonWorkspace />, title: 'Coworking Space', desc: 'Flexible desks to scale fast.', href: '/listing?service=Coworking Space' },
+      { icon: <BsWallet2 />, title: 'Day Pass', desc: 'Cost-effective, on-demand access.', href: '/listing?service=Day Office' },
+      { icon: <BsPersonBadge />, title: 'Virtual Office', desc: 'For registration and mail.', href: '/listing?service=Virtual Office' },
+    ],
+  },
+  {
+    id: 'freelancers',
+    title: 'For Freelancers',
+    icon: <BsPersonWorkspace size={28} />,
+    solutions: [
+        { icon: <BsPersonBadge />, title: 'Virtual Office', desc: 'Look professional anywhere.', href: '/listing?service=Virtual Office' },
+        { icon: <BsWallet2 />, title: 'Day Pass', desc: 'Productive space, when needed.', href: '/listing?service=Day Office' },
+        { icon: <BsDoorOpen />, title: 'Private Office', desc: 'A dedicated, lockable cabin.', href: '/listing?service=Serviced Office' },
+    ],
+  },
+  {
+    id: 'remote-teams',
+    title: 'For Remote Teams',
+    icon: <BsGlobe size={28} />,
+    solutions: [
+        { icon: <BsWallet2 />, title: 'Day Pass', desc: 'Drop-in access across cities.', href: '/listing?service=Day Office' },
+        { icon: <BsPersonVideo />, title: 'Meeting Rooms', desc: 'For physical team sync-ups.', href: '/listing?service=Meeting Room' },
+    ],
+  },
+  {
+    id: 'expanding-biz',
+    title: 'For Expanding Business',
+    icon: <BsMap size={28} />,
+    solutions: [
+        { icon: <BsBuilding />, title: 'Commercial Space', desc: 'Your next flagship location.', href: '/enterprise-solutions' },
+        { icon: <BsPersonBadge />, title: 'Virtual Office', desc: 'Test new markets instantly.', href: '/listing?service=Virtual Office' },
+        { icon: <BsEasel2 />, title: 'Training Rooms', desc: 'Onboard your new city team.', href: '/listing?service=Training Room' },
+        { icon: <BsPersonVideo />, title: 'Meeting Rooms', desc: 'Meet local clients.', href: '/listing?service=Meeting Room' },
+    ],
+  },
+];
+
+
 export default function WorkspacesForEveryone() {
-  // Define tab categories and their corresponding card data:
-  const tabs = [
-    {
-      id: 'enterprise',
-      label: 'Enterprise & Large Scale Companies',
-      cards: [
-        {
-          image: '/images/workspaces/enterprise1.jpg',
-          title: 'Full‐Floor Serviced Office',
-          desc: 'Custom‐branded, fully managed office solutions for 100+ employees.',
-          link: '/enterprise/full-floor',
-        },
-        {
-          image: '/images/workspaces/enterprise2.jpg',
-          title: 'Satellite Hub Solutions',
-          desc: 'Establish satellite hubs across multiple cities with centralized billing.',
-          link: '/enterprise/satellite-hub',
-        },
-        {
-          image: '/images/workspaces/enterprise3.jpg',
-          title: 'Dedicated Enterprise Packages',
-          desc: 'Aggregate multiple locations under a single SLA and reporting dashboard.',
-          link: '/enterprise/packages',
-        },
-      ],
-    },
-    {
-      id: 'growing',
-      label: 'Growing Companies & Small Businesses',
-      cards: [
-        {
-          image: '/images/workspaces/growing1.jpg',
-          title: 'Plug‐and‐Play Team Rooms',
-          desc: 'Scalable team rooms for 10–50 people, move in tomorrow, no capex.',
-          link: '/growing/team-rooms',
-        },
-        {
-          image: '/images/workspaces/growing2.jpg',
-          title: 'Flexible Lease Terms',
-          desc: 'Month‐to‐month flexibility to adapt as your headcount grows or shrinks.',
-          link: '/growing/flexible-lease',
-        },
-        {
-          image: '/images/workspaces/growing3.jpg',
-          title: 'Co‐working Memberships',
-          desc: 'Access multiple locations on a single membership—perfect for multi‐city teams.',
-          link: '/growing/memberships',
-        },
-      ],
-    },
-    {
-      id: 'freelancers',
-      label: 'Freelancers & Business Travellers',
-      cards: [
-        {
-          image: '/images/workspaces/freelancer1.jpg',
-          title: 'Day‐Pass & Hot‐Desk Access',
-          desc: 'Pay‐as‐you‐go access to high‐energy co‐working spaces—no permanent desk required.',
-          link: '/freelancers/day-pass',
-        },
-        {
-          image: '/images/workspaces/freelancer2.jpg',
-          title: 'Virtual Office Address',
-          desc: 'Get a prestigious business address & mail handling, anywhere in India.',
-          link: '/freelancers/virtual-office',
-        },
-        {
-          image: '/images/workspaces/freelancer3.jpg',
-          title: 'Meeting Room Bookings',
-          desc: 'Hourly or half‐day meeting rooms equipped with video‐conferencing tech.',
-          link: '/freelancers/meeting-rooms',
-        },
-      ],
-    },
-    {
-      id: 'startups',
-      label: 'Early Stage Startups & Non-Profits',
-      cards: [
-        {
-          image: '/images/workspaces/startup1.jpg',
-          title: 'Incubator & Accelerator Spaces',
-          desc: 'Specially curated co‐working clusters with mentorship programs.',
-          link: '/startups/incubator',
-        },
-        {
-          image: '/images/workspaces/startup2.jpg',
-          title: 'Grant‐Enabled Work Hubs',
-          desc: 'Discounted seats and shared offices for registered non-profits.',
-          link: '/startups/grants',
-        },
-        {
-          image: '/images/workspaces/startup3.jpg',
-          title: 'Start‐Up Booster Programs',
-          desc: 'Credit‐back incentives on yearly plans when you hit growth milestones.',
-          link: '/startups/booster',
-        },
-      ],
-    },
-    {
-      id: 'remote',
-      label: 'Remote & Mobile Teams',
-      cards: [
-        {
-          image: '/images/workspaces/remote1.jpg',
-          title: 'Multi-City Hot Desks',
-          desc: 'One membership, unlimited drop-in across 50+ cities—ideal for agile teams.',
-          link: '/remote/hot-desks',
-        },
-        {
-          image: '/images/workspaces/remote2.jpg',
-          title: 'Regional Satellite Pods',
-          desc: 'Reserve mini‐offices in Tier 2/3 cities for remote team meetups.',
-          link: '/remote/satellite-pods',
-        },
-        {
-          image: '/images/workspaces/remote3.jpg',
-          title: 'Roaming Access Plans',
-          desc: 'Work seamlessly across partner locations with a single roaming pass.',
-          link: '/remote/roaming',
-        },
-      ],
-    },
-    {
-      id: 'expanding',
-      label: 'New & Expanding Businesses',
-      cards: [
-        {
-          image: '/images/workspaces/expand1.jpg',
-          title: 'Market Entry Bundles',
-          desc: 'All‐inclusive packages (legal address, desk, meeting room) for new cities.',
-          link: '/expanding/market-entry',
-        },
-        {
-          image: '/images/workspaces/expand2.jpg',
-          title: 'Office Fit-Out Services',
-          desc: 'Design + furniture + move‐in support tailored to your brand’s DNA.',
-          link: '/expanding/fit-out',
-        },
-        {
-          image: '/images/workspaces/expand3.jpg',
-          title: 'Anchor Tenant Solutions',
-          desc: 'Secured long‐term leases with build‐out credits for growing footprints.',
-          link: '/expanding/anchor-tenant',
-        },
-      ],
-    },
-  ];
+  // 2. STATE TO TRACK THE ACTIVE PERSONA
+  const [activePersonaId, setActivePersonaId] = useState(personas[0].id);
 
-  // Track which tab is active:
-  const [activeTab, setActiveTab] = useState(tabs[0].id);
-
-  // Find the currently active tab object
-  const currentTab = tabs.find((t) => t.id === activeTab);
+  const activePersona = personas.find((p) => p.id === activePersonaId);
 
   return (
-    <section className="py-16 bg-primary-light">
+    <section className="py-20 bg-primary-light">
       <div className="max-w-7xl mx-auto px-4">
-        {/* 1) Heading + Subheading */}
-        <h2 className="text-3xl md:text-4xl font-semibold text-primary-dark text-center">
-          Workspaces for Everyone
-        </h2>
-        <p className="text-medium-gray text-center mt-2 mb-8">
-          Whether you’re a freelancer, early-stage startup, or an enterprise—find the workspace that’s right for you.
-        </p>
+        {/* --- Section Heading --- */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary-dark">
+            The Right Space for Every Pace
+          </h2>
+          <p className="text-lg text-medium-gray mt-3 max-w-3xl mx-auto">
+            From large enterprises to individual freelancers, we provide tailored solutions to meet your unique workspace needs.
+          </p>
+        </div>
 
-        {/* 2) Tabs row */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {tabs.map((tab) => (
+        {/* 3. THE PERSONA GRID (ACTS AS TABS) */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+          {personas.map((persona) => (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              key={persona.id}
+              onClick={() => setActivePersonaId(persona.id)}
               className={`
-                px-4 py-3 
-                text-sm md:text-base 
-                font-medium 
-                rounded-lg 
-                border-2 
-                focus:outline-none 
-                transition 
-                ${
-                  activeTab === tab.id
-                    ? 'bg-brand-primary text-primary-light border-brand-primary'
-                    : 'bg-white text-primary-dark border-medium-gray hover:bg-brand-primary hover:text-primary-light hover:border-brand-primary'
+                flex flex-col items-center justify-center text-center p-4 rounded-xl 
+                border-2 transition-all duration-300
+                ${activePersonaId === persona.id
+                  ? 'bg-brand-primary text-white border-brand-primary shadow-lg'
+                  : 'bg-white text-primary-dark border-transparent hover:border-brand-primary hover:-translate-y-1'
                 }
               `}
             >
-              {tab.label}
+              <div className="mb-2">{persona.icon}</div>
+              <span className="font-semibold text-sm">{persona.title}</span>
             </button>
           ))}
         </div>
-
-        {/* 3) Cards for the active tab */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {currentTab.cards.map((card, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300"
-            >
-              {/* Image at top */}
-              <div className="relative w-full h-48">
-                <Image
-                  src={card.image}
-                  alt={card.title}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-
-              {/* Card content */}
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-primary-dark mb-2">
-                  {card.title}
-                </h3>
-                <p className="text-medium-gray mb-4">{card.desc}</p>
-                <a
-                  href={card.link}
-                  className="text-brand-primary font-medium hover:underline"
-                >
-                  Explore&nbsp;
-                  <span className="inline-block transform translate-x-0 hover:translate-x-1 transition-transform duration-200">
-                    →
-                  </span>
-                </a>
-              </div>
+        
+        {/* 4. THE DYNAMIC SOLUTIONS GRID */}
+        <div className="bg-white p-8 rounded-2xl shadow-sm">
+           <h3 className="text-2xl font-bold text-primary-dark mb-6">Recommended Solutions for <span className="text-brand-primary">{activePersona.title}</span></h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {activePersona.solutions.map((solution) => (
+                    <Link
+                        key={solution.title}
+                        href={solution.href}
+                        className="group block p-6 bg-primary-light rounded-xl hover:bg-accent/20 transition-colors"
+                    >
+                        <div className="text-brand-primary mb-3">{solution.icon}</div>
+                        <h4 className="font-bold text-primary-dark mb-1">{solution.title}</h4>
+                        <p className="text-sm text-medium-gray">{solution.desc}</p>
+                    </Link>
+                ))}
             </div>
-          ))}
         </div>
 
-        {/* 4) Carousel Dots (optional) */}
-        <div className="flex justify-center space-x-2 mt-10">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`
-                w-3 h-3 rounded-full transition-colors duration-300
-                ${
-                  activeTab === tab.id
-                    ? 'bg-brand-primary'
-                    : 'bg-medium-gray'
-                }
-              `}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );

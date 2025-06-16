@@ -12,32 +12,24 @@ export default function PopularCities() {
     'Bangalore',
     'Chennai',
     'Hyderabad',
-    'Ahmedabad',
-    'Kolkata',
-    'Indore',
   ];
 
   const handleClick = (city) => {
-    // Navigate to search with city filter
-    router.push(`/search?city=${encodeURIComponent(city)}`);
+    // UPDATED: Navigate to the /listing page we built
+    router.push(`/listing?city=${encodeURIComponent(city)}`);
   };
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap justify-center items-center gap-3">
       {cities.map((city) => (
         <button
           key={city}
           onClick={() => handleClick(city)}
-          className="px-4 py-1 rounded-full border border-brand-primary text-brand-primary hover:bg-brand-primary hover:text-primary-light transition-colors"
+          className="px-4 py-1 rounded-full border border-medium-gray text-medium-gray hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-colors"
         >
           {city}
         </button>
       ))}
-
-      {/* View more button (no click handler) */}
-      <button className="px-4 py-1 rounded-full bg-accent text-primary-light hover:bg-[#d4a764] transition-colors">
-        View more
-      </button>
     </div>
   );
 }

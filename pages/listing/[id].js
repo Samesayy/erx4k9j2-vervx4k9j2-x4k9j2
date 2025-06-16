@@ -1,113 +1,131 @@
-// pages/listing/[id].js
-
-import { useState, useEffect } from 'react';
+import React from 'react';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { supabase } from '../../lib/supabaseClient';
+import { MapPin, Wifi, Coffee, Clock, Users, Building, Zap } from 'lucide-react';
+
+// Import all necessary components
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import SimilarWorkspaces from '../../components/SimilarWorkspaces';
+import PromotionalBanner from '../../components/listing/PromotionalBanner';
+import RightSidebar from '../../components/listing/RightSidebar'; // <-- Use the new container
+import ImageGallery from '../../components/listing/details/ImageGallery';
+import AmenitiesGrid from '../../components/listing/details/AmenitiesGrid';
+import LocationMap from '../../components/listing/details/LocationMap';
 
-export default function ListingDetail() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [listing, setListing] = useState(null);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [success, setSuccess] = useState(false);
+// Page component now receives 'listing' and 'similarListings' as props
+export default function ListingDetailPage({ listing, similarListings, error }) {
+    const router = useRouter();
 
-  useEffect(() => {
-    if (!id) return;
-    const fetchListing = async () => {
-      let { data, error } = await supabase
-        .from('listings')
-        .select('*')
-        .eq('id', id)
-        .single();
-      if (!error) setListing(data);
-    };
-    fetchListing();
-  }, [id]);
+    if (router.isFallback) {
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    }
 
-  const handleInquiry = async (e) => {
-    e.preventDefault();
-    await fetch('/api/inquiry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ listing_id: id, name, email, message }),
-    });
-    setSuccess(true);
-  };
+    if (error || !listing) {
+        return <div className="min-h-screen flex items-center justify-center">Listing not found.</div>;
+    }
+        
+    const amenities = [
+        { icon: <Wifi />, text: 'High-speed Wi-Fi' },
+        { icon: <Coffee />, text: 'Free Tea/Coffee' },
+        { icon: <Clock />, text: '24/7 Access' },
+        { icon: <Users />, text: 'Community Events' },
+        { icon: <Building />, text: 'Meeting Rooms' },
+        { icon: <Zap />, text: 'Power Backup' },
+    ];
 
-  if (!listing) return <p className="p-4 text-medium-gray">Loading...</p>;
+    const pageTitle = `${listing.title} in ${listing.city?.name || ''} | Verve99`;
 
-  return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar />
-      <main className="flex-grow bg-primary-light py-8">
-        <div className="max-w-3xl mx-auto px-4 bg-primary-light rounded shadow">
-          <img
-            src={listing.image_url}
-            alt={listing.title}
-            className="w-full h-64 object-cover rounded-t"
-          />
-          <div className="p-6">
-            <h1 className="text-3xl font-bold text-primary-dark mb-2">
-              {listing.title}
-            </h1>
-            <p className="text-medium-gray mb-4">{listing.city}</p>
-            <p className="text-primary-dark mb-4">{listing.description}</p>
-            <h2 className="text-xl font-semibold text-brand-primary mb-2">
-              Price: ${listing.price_per_day}/day
-            </h2>
-            <hr className="my-4 border-medium-gray" />
-            <h2 className="text-2xl font-semibold text-primary-dark mb-2">
-              Inquire / Generate Lead
-            </h2>
-            {success ? (
-              <p className="text-brand-primary">Your inquiry has been submitted!</p>
-            ) : (
-              <form onSubmit={handleInquiry} className="space-y-4">
-                <div>
-                  <label className="block text-primary-dark">Name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border border-medium-gray rounded bg-primary-light text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                  />
+    return (
+        <div className="bg-gray-50">
+            <Head>
+                <title>{pageTitle}</title>
+                <meta name="description" content={listing.description || `Explore ${listing.title}, a premium workspace at ${listing.address}.`} />
+            </Head>
+            <Navbar />
+
+            <main className="max-w-7xl mx-auto px-4 py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <div className="lg:col-span-8 space-y-8">
+                        <div>
+                            <h1 className="text-4xl font-extrabold text-primary-dark tracking-tight">{listing.title}</h1>
+                            <p className="flex items-center mt-2 text-md text-gray-600">
+                                <MapPin size={16} className="mr-2 flex-shrink-0" /> {listing.address}, {listing.city?.name}
+                            </p>
+                        </div>
+                        <ImageGallery title={listing.title} images={listing.images} />
+                        <div className="bg-white p-6 rounded-lg shadow-sm border">
+                            <h2 className="text-2xl font-bold text-primary-dark mb-4">About This Workspace</h2>
+                            <div className="prose max-w-none text-gray-700 whitespace-pre-line">
+                                <p>{listing.description || 'A modern workspace designed for productivity.'}</p>
+                            </div>
+                        </div>
+                        <AmenitiesGrid amenities={amenities} />
+                        <LocationMap address={listing.address} />
+                    </div>
+
+                    <div className="lg:col-span-4">
+                         <div className="lg:sticky top-28 self-start">
+                            <RightSidebar listingId={listing.id} hostId={listing.host_id} />
+                        </div>
+                    </div>
                 </div>
-                <div>
-                  <label className="block text-primary-dark">Email</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border border-medium-gray rounded bg-primary-light text-primary-dark focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                  />
-                </div>
-                <div>
-                  <label className="block text-primary-dark">Message</label>
-                  <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    required
-                    className="w-full px-3 py-2 border border-medium-gray rounded bg-primary-light text-primary-dark h-24 focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-brand-primary text-primary-light px-4 py-2 rounded hover:bg-accent transition-colors"
-                >
-                  Submit Inquiry
-                </button>
-              </form>
-            )}
-          </div>
+
+                {/* --- BANNERS AND CAROUSELS ADDED HERE --- */}
+                <PromotionalBanner />
+            </main>
+            
+            <SimilarWorkspaces similarListings={similarListings} />
+            <Footer />
         </div>
-      </main>
-      <Footer />
-    </div>
-  );
+    );
+}
+
+// --- UPDATED DATA FETCHING LOGIC ---
+export async function getStaticProps(context) {
+    const { id } = context.params;
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+    try {
+        // Fetch 1: The main listing
+        const { data: listing, error: listingError } = await supabase
+            .from('listings')
+            .select(`*, images(*), city:cities(id, name)`)
+            .eq('id', id)
+            .single();
+
+        if (listingError || !listing) {
+            console.error(`Error fetching listing with ID ${id}:`, listingError);
+            return { notFound: true };
+        }
+
+        // Fetch 2: Similar listings
+        const { data: similarListings, error: similarError } = await supabase
+            .from('listings')
+            .select(`id, title, address, images(*), listing_space_types(space_type:space_types(name)), price_per_month`)
+            .eq('city_id', listing.city.id) // Match by city ID
+            .neq('id', id)                   // Exclude the current listing
+            .limit(6);                       // Get up to 6 similar items
+
+        if (similarError) {
+            console.error('Error fetching similar listings:', similarError);
+            // We don't fail the page if similar listings fail, just return an empty array
+        }
+
+        return {
+            props: {
+                listing,
+                similarListings: similarListings || [], // Pass both to the page
+            },
+            revalidate: 3600,
+        };
+    } catch (error) {
+        return { props: { error: 'Failed to load data.' } };
+    }
+}
+
+export async function getStaticPaths() {
+    return { paths: [], fallback: 'blocking' };
 }
