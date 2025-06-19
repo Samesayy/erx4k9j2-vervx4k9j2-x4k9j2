@@ -1,3 +1,4 @@
+// components/listing/details/LocationMap.jsx
 import React from 'react';
 import { MapPin } from 'lucide-react';
 

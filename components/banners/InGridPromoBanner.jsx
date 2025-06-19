@@ -1,21 +1,40 @@
+// components/banners/InGridPromoBanner.jsx
 import React from 'react';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Users, Briefcase, Zap, Gift } from 'lucide-react';
 
-// This banner is designed to have the same aspect ratio as a grid card.
+const features = [
+  { icon: <Users size={28} className="text-accent" />, text: 'Expert Recommendations' },
+  { icon: <Briefcase size={28} className="text-accent" />, text: 'Tailored Workspace Plans' },
+  { icon: <Zap size={28} className="text-accent" />, text: 'Quick, Hassle-Free Setup' },
+  { icon: <Gift size={28} className="text-accent" />, text: 'Exclusive Member Perks' },
+];
+
 export default function InGridPromoBanner({ onExpertClick }) {
-    return (
-        <div className="rounded-lg shadow-sm bg-gradient-to-br from-primary-dark to-gray-800 text-white p-6 flex flex-col items-center justify-center text-center h-full">
-            <MessageSquare size={36} className="mb-3" />
-            <h3 className="font-bold text-lg">Still Looking?</h3>
-            <p className="text-sm text-gray-200 mt-2">
-                Let our experts find the perfect workspace for your team, free of charge.
-            </p>
-            <button
-                onClick={onExpertClick}
-                className="mt-4 w-full px-6 py-2 bg-accent text-primary-dark font-semibold rounded-md hover:bg-opacity-90 transition-transform hover:scale-105 text-sm"
-            >
-                Talk to an Expert
-            </button>
-        </div>
-    );
+  return (
+    <div className="h-full flex flex-col justify-between p-6 bg-gradient-to-br from-primary-dark to-brand-primary text-white rounded-xl shadow-glass overflow-hidden">
+      <div className="text-center animate-fade-in-down">
+        <MessageSquare size={40} className="mx-auto mb-3 text-accent" />
+        <h3 className="text-2xl font-bold mb-2">Still Looking?</h3>
+        <p className="text-sm text-primary-light mb-4">
+          Let us match you with the perfect workspace, free of charge.
+        </p>
+      </div>
+
+      <ul className="space-y-2 mb-4">
+        {features.map((feat, idx) => (
+          <li key={idx} className="flex items-center text-sm">
+            {feat.icon}
+            <span className="ml-2">{feat.text}</span>
+          </li>
+        ))}
+      </ul>
+
+      <button
+        onClick={onExpertClick}
+        className="w-full py-2 bg-accent text-primary-dark font-semibold rounded-md hover:bg-opacity-90 transition-transform hover:scale-105"
+      >
+        Talk to an Expert
+      </button>
+    </div>
+  );
 }

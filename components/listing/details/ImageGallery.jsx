@@ -1,3 +1,4 @@
+// components/listing/details/ImageGallary.jsx
 import React from 'react';
 import Image from 'next/image';
 

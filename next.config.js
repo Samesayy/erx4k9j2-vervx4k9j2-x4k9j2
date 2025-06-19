@@ -6,7 +6,6 @@ const nextConfig = {
       'placehold.co',
       'keycgpspjcxumapgoxyn.supabase.co',
       'images.unsplash.com',
-      'example.com', // ✅ Added this as per your request
     ],
   },
 };

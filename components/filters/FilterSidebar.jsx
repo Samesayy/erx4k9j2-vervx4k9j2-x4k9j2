@@ -1,3 +1,4 @@
+// components/filters/FilterSidebar.jsx
 import React, { useState, useEffect } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 
@@ -52,25 +53,29 @@ export default function FilterSidebar({ filters, onChange }) {
                     <option value="Coworking Space">Coworking Space</option>
                     <option value="Private Office">Private Office</option>
                     <option value="Meeting Room">Meeting Room</option>
+                    <option value="Virtual Office">Virtual Office</option> {/* Added Virtual Office */}
                 </select>
             </div>
 
-            {/* Price Range */}
+            {/* Price Range - CORRECTED */}
             <div>
                 <label className="block text-sm font-medium">Max Price (₹)</label>
                 <input
                     type="range"
                     min="0"
-                    max="100000" // Increased max price range
+                    max="100000"
                     step="1000"
-                    value={filters.priceRange[1]}
+                    // Use filters.priceMax directly
+                    value={filters.priceMax || 0} // Add || 0 to handle initial undefined state gracefully
                     onChange={(e) =>
-                        onChange({ ...filters, priceRange: [0, Number(e.target.value)] })
+                        // Update priceMax directly, no need for an array here
+                        onChange({ ...filters, priceMax: Number(e.target.value) })
                     }
                     className="w-full"
                 />
                 <div className="mt-1 text-sm text-gray-600">
-                    Up to ₹{filters.priceRange[1].toLocaleString()}
+                    {/* Display filters.priceMax */}
+                    Up to ₹{filters.priceMax ? filters.priceMax.toLocaleString() : '0'}
                 </div>
             </div>
         </div>

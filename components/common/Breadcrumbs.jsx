@@ -1,3 +1,4 @@
+// components/common/Breadcrumbs.jsx
 import React from 'react';
 import Link from 'next/link';
 import { ChevronRight, Home } from 'lucide-react';
